@@ -10,7 +10,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "eslint-config-airbnb": "^16.1.0",
     "express": "^4.16.2"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "chai-http": "^3.0.0",
+    "eslint": "^4.18.1",
+    "eslint-config-airbnb": "^16.1.0",
+    "eslint-plugin-import": "^2.9.0",
+    "mocha": "^5.0.1"
   }
 }
