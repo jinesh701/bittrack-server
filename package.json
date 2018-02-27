@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "eslint-config-airbnb": "^16.1.0",
     "express": "^4.16.2"
   }
 }
