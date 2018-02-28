@@ -3,19 +3,17 @@ const chaiHttp = require('chai-http');
 
 const { app } = require('../server');
 
-const expect = chai.expect;
-
+const should = chai.should();
 chai.use(chaiHttp);
 
-describe('Bittrack App', () => {
-  describe('Index Page', () => {
-    it('Should have a status of 200', () => {
-      return chai
-        .request(app)
-        .get('/')
-        .then(res => {
-          expect(res).to.have.status(200);
-        });
-    });
+describe('API', () => {
+  it('should 200 on GET requests', () => {
+    return chai
+      .request(app)
+      .get('/api/test')
+      .then(res => {
+        res.should.have.status(200);
+        res.should.be.json;
+      });
   });
 });
