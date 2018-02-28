@@ -1,9 +1,11 @@
 language: node_js
 node_js: node
+services:
+    - mongodb
 deploy:
   provider: heroku
   api_key:
     secure: ZAB3nKUNv3NSuLS5wbXBmET3tSE49arKKUV63cnjMQ0YyV2LRtGiCekWzMwXZ0e9qUUSQOrRq6wOmapWm1OQnd/CeWRjtHiRRF6oBPFz/CxvmnZCpz2stt5Qbf3HUHedT4wLREP5Xb7lwPN+CJxN7gybIezStCFEHyFNTDJ3BE7hzNGWIqg6QDaF/UoA4pZcs6QXyLJXaa17NPqZ6ck26z9cBvjIo7jhGU10zPKVenZ9sO8Xn2njBHa0i4BYxkS3cNWcixDh3b1yfw5HGsaWXriRG2P7Kj7w6mTbi0/RqxW8nnCAu4vKvYgTO9LRY6GKwPhwrmssXZSBWGIqHzMyUpdDEfQC58h1rUKTy87+tJmYEM4A4O8YZ+l/ywKr052Q+WxMuDc5uLx0/cAy6Oov3L7OhyFngz/sZ6YOUHRhMrYSKwbaSsZpvP+6m/c69R+jhLeMGoEQMmVvnuWpiXP6nKbGL/hmQk6ep7aha5Y2kOA9/78ZOPB9OK4ex+93XxrVO1UmlAjPHZWY4W3fNdEwETpYVsa73zW8llq9WiJeZKbjvTM7ip7VzmuLefao4aFkkm4owyrUs5MPrGWa0slJPYnNB0q8anQUUat0MdhlnaDb98z6e65ADKQ0OjddnVF5aa/vxqT4lrD9Lc+renM60XvSTzldIHHZbVPIM6JGUI0=
-  app: murmuring-brushlands-67032
+  app: floating-harbor-45364
   on:
     repo: jinesh701/bittrack-server
