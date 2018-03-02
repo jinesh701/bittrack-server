@@ -9,9 +9,6 @@ const morgan = require('morgan');
 const { PORT, DATABASE_URL } = require('./config');
 const watchlist = require('./router/watchlist');
 
-// MongoDB
-const db = mongoose.connect('mongodb://localhost/bittrack');
-
 // Express
 const app = express();
 
