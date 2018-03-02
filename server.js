@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const morgan = require('morgan');
 
+const { PORT, DATABASE_URL } = require('./config');
 const watchlist = require('./router/watchlist');
 
 // MongoDB
@@ -30,8 +31,6 @@ app.use(cookieParser());
 // Router
 app.use('/api', watchlist);
 
-const PORT = process.env.PORT || 8080;
-
 app.get('/', (req, res) => {
   res.send('Welcome to my API!');
 });
@@ -53,6 +52,49 @@ app.post('/login', (req, res) => {
   }
 });
 
-app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
+// Catch-all for non-existent endpoints
+app.use('*', (req, res) => {
+  res.status(404).json({ message: 'Not Found' });
+});
 
-module.exports = { app };
+// Server
+let server;
+
+function runServer(databaseUrl, port = PORT) {
+  return new Promise((resolve, reject) => {
+    mongoose.connect(databaseUrl, err => {
+      if (err) {
+        return reject(err);
+      }
+      server = app
+        .listen(port, () => {
+          console.log(`Your app is listening on port ${port}`);
+          resolve();
+        })
+        .on('error', err => {
+          mongoose.disconnect();
+          reject(err);
+        });
+    });
+  });
+}
+
+function closeServer() {
+  return mongoose.disconnect().then(() => {
+    return new Promise((resolve, reject) => {
+      console.log('Closing server');
+      server.close(err => {
+        if (err) {
+          return reject(err);
+        }
+        resolve();
+      });
+    });
+  });
+}
+
+if (require.main === module) {
+  runServer(DATABASE_URL).catch(err => console.error(err));
+}
+
+module.exports = { app, runServer, closeServer };
