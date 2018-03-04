@@ -2,21 +2,16 @@ const express = require('express');
 
 const router = express.Router();
 const { CryptoWatchlist } = require('../models/watchlist');
-const getCoins = require('../api');
+const { getCoins, getAllCoins } = require('../api');
 
 router.get('/watchlist', (req, res) => {
   const watchlistPromises = CryptoWatchlist.find().then(watchlists =>
     watchlists.map(({ id }) => getCoins(id))
   );
 
-  Promise.all(watchlistPromises)
-    .then(responses => {
-      console.log(responses);
-    })
-    .catch(err => {
-      console.error(err);
-      res.status(500).json({ message: 'Internal server error' });
-    });
+  Promise.all([watchlistPromises]).then(responses => {
+    res.json(responses);
+  });
 });
 
 router.post('/watchlist/:id', (req, res) => {
@@ -26,19 +21,12 @@ router.post('/watchlist/:id', (req, res) => {
   if (userCookie !== undefined) {
     // Do error handling for missing fields
 
-    CryptoWatchlist.create({
-      id: req.body.id,
-      name: req.body.name,
-      symbol: req.body.symbol,
-      price_usd: req.body.price_usd,
-      price_btc: req.body.price_btc,
-      volume_usd_24hr: req.body.volume_usd_24hr,
-      percent_change_1h: req.body.percent_change_1h,
-      percent_change_24h: req.body.percent_change_24h,
-      percent_change_7d: req.body.percent_change_7d
-    })
+    const cryptoWatchlist = new CryptoWatchlist(req.body);
+
+    getCoins(id)
+      .then(coin => cryptoWatchlist.save(coin))
       .then(newItem => {
-        res.status(201).json(newItem.serialize());
+        res.status(201).json(newItem);
       })
       .catch(err => {
         console.error(err);
