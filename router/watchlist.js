@@ -5,10 +5,14 @@ const { CryptoWatchlist } = require('../models/watchlist');
 const getCoins = require('../api');
 
 router.get('/watchlist', (req, res) => {
-  CryptoWatchlist.find()
-    .then(watchlists =>
-      res.json(watchlists.map(watchlist => watchlist.serialize()))
-    )
+  const watchlistPromises = CryptoWatchlist.find().then(watchlists =>
+    watchlists.map(({ id }) => getCoins(id))
+  );
+
+  Promise.all(watchlistPromises)
+    .then(responses => {
+      console.log(responses);
+    })
     .catch(err => {
       console.error(err);
       res.status(500).json({ message: 'Internal server error' });
