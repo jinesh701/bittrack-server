@@ -7,5 +7,14 @@ function getCoins(coin) {
     }
   );
 }
+function getAllCoins(coins) {
+  const watchlistPromises = coins.map(id => getCoins(id));
 
-module.exports = getCoins;
+  return Promise.all(watchlistPromises).then(result =>
+    result.reduce((a, b) => {
+      return a.concat(b);
+    })
+  );
+}
+
+module.exports = { getCoins, getAllCoins };
