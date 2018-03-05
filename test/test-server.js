@@ -98,19 +98,6 @@ describe('Crypto API', () => {
         })
         .then(cryptoCoin => {
           expect(resCryptos.id).to.equal(cryptoCoin.id);
-          expect(resCryptos.name).to.equal(cryptoCoin.name);
-          expect(resCryptos.symbol).to.equal(cryptoCoin.symbol);
-          expect(resCryptos.price_usd).to.equal(cryptoCoin.price_usd);
-          expect(resCryptos.price_btc).to.equal(cryptoCoin.price_btc);
-          expect(resCryptos.percent_change_1h).to.equal(
-            cryptoCoin.percent_change_1h
-          );
-          expect(resCryptos.percent_change_24h).to.equal(
-            cryptoCoin.percent_change_24h
-          );
-          expect(resCryptos.percent_change_7d).to.equal(
-            cryptoCoin.percent_change_7d
-          );
         });
     });
   });
