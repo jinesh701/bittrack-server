@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon -- server.js",
-    "test": "mocha --exit"
+    "test": "mocha --exit",
+    "test-watch": "nodemon --exec \"mocha -R min\""
   },
   "author": "",
   "license": "ISC",
@@ -24,6 +25,7 @@
     "eslint": "^4.18.1",
     "eslint-config-airbnb": "^16.1.0",
     "eslint-plugin-import": "^2.9.0",
-    "mocha": "^5.0.1"
+    "mocha": "^5.0.1",
+    "nodemon": "^1.17.1"
   }
 }
