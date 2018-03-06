@@ -7,6 +7,7 @@ const cors = require('cors');
 const morgan = require('morgan');
 
 const { PORT, DATABASE_URL } = require('./config');
+const { CLIENT_ORIGIN } = require('./config');
 const watchlist = require('./router/watchlist');
 
 // Express
@@ -17,7 +18,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 // Cors
-app.use(cors());
+app.use(
+  cors({
+    origin: CLIENT_ORIGIN,
+    credentials: true
+  })
+);
 
 // Logging
 app.use(morgan('common'));
