@@ -13,7 +13,7 @@ function getAllCoins(coins) {
   return Promise.all(watchlistPromises).then(result =>
     result.reduce((a, b) => {
       return a.concat(b);
-    })
+    }, [])
   );
 }
 
