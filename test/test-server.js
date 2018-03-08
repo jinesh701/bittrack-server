@@ -101,11 +101,11 @@ describe('Crypto API', () => {
         .then(res => expect(res).to.have.cookie('user'))
         .then(() =>
           agent
-            .post('/api/watchlist/bitcoin')
+            .post('/api/watchlist/stellar')
             .send(coin)
             .then(res => {
               expect(res).to.be.a('object');
-              expect(res.body.name).to.equal('Bitcoin');
+              expect(res.body.name).to.equal('Stellar');
             })));
   });
 });
