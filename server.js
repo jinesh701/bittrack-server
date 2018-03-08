@@ -1,3 +1,5 @@
+/* eslint func-names: ["error", "as-needed"], no-shadow: ["error", { "allow": ["err"] }] */
+
 // Dependencies
 const express = require('express');
 const mongoose = require('mongoose');
@@ -18,12 +20,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 // Cors
-app.use(
-  cors({
-    origin: CLIENT_ORIGIN,
-    credentials: true
-  })
-);
+app.use(cors({
+  origin: CLIENT_ORIGIN,
+  credentials: true
+}));
 
 // Logging
 app.use(morgan('common'));
@@ -39,13 +39,10 @@ app.get('/', (req, res) => {
 });
 
 app.post('/login', (req, res) => {
-  let createId = function() {
-    return (
-      '_' +
-      Math.random()
-        .toString(36)
-        .substr(2, 9)
-    );
+  const createId = function () {
+    return `_${Math.random()
+      .toString(36)
+      .substr(2, 9)}`;
   };
 
   if (!req.cookies.user) {
@@ -83,8 +80,8 @@ function runServer(databaseUrl, port = PORT) {
 }
 
 function closeServer() {
-  return mongoose.disconnect().then(() => {
-    return new Promise((resolve, reject) => {
+  return mongoose.disconnect().then(() =>
+    new Promise((resolve, reject) => {
       console.log('Closing server');
       server.close(err => {
         if (err) {
@@ -92,8 +89,7 @@ function closeServer() {
         }
         resolve();
       });
-    });
-  });
+    }));
 }
 
 if (require.main === module) {

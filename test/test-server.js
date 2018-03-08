@@ -1,4 +1,4 @@
-/* eslint-env mocha */
+/* eslint-disable no-unused-expressions  */
 
 const chai = require('chai');
 const chaiHttp = require('chai-http');
@@ -39,29 +39,20 @@ function tearDownDb() {
 }
 
 describe('Crypto API', () => {
-  before(() => {
-    return runServer(TEST_DATABASE_URL);
-  });
+  before(() => runServer(TEST_DATABASE_URL));
 
-  beforeEach(() => {
-    return seedCryptoData();
-  });
+  beforeEach(() => seedCryptoData());
 
-  afterEach(() => {
-    return tearDownDb();
-  });
+  afterEach(() => tearDownDb());
 
-  after(() => {
-    return closeServer();
-  });
+  after(() => closeServer());
 
   describe('Login', () => {
-    it('sets the cookie', () => {
-      return chai
+    it('sets the cookie', () =>
+      chai
         .request(app)
         .post('/login')
-        .then(res => expect(res).to.have.cookie('user'));
-    });
+        .then(res => expect(res).to.have.cookie('user')));
   });
 
   describe('Watchlist GET', () => {
@@ -104,19 +95,17 @@ describe('Crypto API', () => {
 
   describe('Watchlist POST', () => {
     const agent = chai.request.agent(app);
-    it('posts an item to watchlist', () => {
-      return agent
+    it('posts an item to watchlist', () =>
+      agent
         .post('/login')
         .then(res => expect(res).to.have.cookie('user'))
-        .then(() => {
-          return agent
+        .then(() =>
+          agent
             .post('/api/watchlist/bitcoin')
             .send(coin)
             .then(res => {
               expect(res).to.be.a('object');
               expect(res.body.name).to.equal('Bitcoin');
-            });
-        });
-    });
+            })));
   });
 });

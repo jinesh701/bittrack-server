@@ -5,7 +5,7 @@ const { CryptoWatchlist } = require('../models/watchlist');
 const { getCoins, getAllCoins } = require('../api');
 
 router.get('/watchlist', (req, res) => {
-  const watchlistPromises = CryptoWatchlist.find()
+  CryptoWatchlist.find()
     .then(watchlists => watchlists.map(watchlist => watchlist.id))
     .then(getAllCoins)
     .then(res.json.bind(res))
@@ -16,8 +16,8 @@ router.get('/watchlist', (req, res) => {
 });
 
 router.post('/watchlist/:id', (req, res) => {
-  let id = req.params.id;
-  let userCookie = req.cookies.user;
+  const id = req.params.id;
+  const userCookie = req.cookies.user;
 
   if (userCookie !== undefined) {
     getCoins(id)
@@ -25,8 +25,7 @@ router.post('/watchlist/:id', (req, res) => {
       .then(value =>
         CryptoWatchlist.create({
           id: value.id
-        }).then(() => value)
-      )
+        }).then(() => value))
       .then(newItem => {
         res.status(201).json(newItem);
       })
