@@ -95,17 +95,49 @@ describe('Crypto API', () => {
 
   describe('Watchlist POST', () => {
     const agent = chai.request.agent(app);
-    it('posts an item to watchlist', () =>
+    let resCryptos;
+    let id;
+    let error;
+    it('posts an item to watchlist and checks if it already exists', () =>
       agent
         .post('/login')
         .then(res => expect(res).to.have.cookie('user'))
         .then(() =>
           agent
             .post('/api/watchlist/stellar')
-            .send(coin)
             .then(res => {
+              expect(res).to.have.status(201);
+              expect(res).to.be.be.json;
               expect(res).to.be.a('object');
-              expect(res.body.name).to.equal('Stellar');
-            })));
+
+              resCryptos = res.body;
+              id = res.body.id;
+              return CryptoWatchlist.findOne({ id });
+            })
+            .then(item => {
+              expect(item.id).to.equal(resCryptos.id);
+            })
+            .then(() =>
+              agent.post('/api/watchlist/stellar').then(res => {
+                error = 'Stellar already in watchlist';
+                expect(res.body).to.equal(error);
+              }))));
+  });
+
+  describe('Watchlist DELETE', () => {
+    const error = 'Item does not exist in watchlist';
+    it('should delete a coin and check if it exists', () =>
+      chai
+        .request(app)
+        .delete('/api/watchlist/bitcoin')
+        .then(res => {
+          expect(res).to.have.status(204);
+        })
+        .then(chai
+          .request(app)
+          .delete('/api/watchlist/bitcoin')
+          .then(res => {
+            expect(res.body).to.equal(error);
+          })));
   });
 });
