@@ -4,6 +4,7 @@ const router = express.Router();
 const { CryptoWatchlist } = require('../models/watchlist');
 const { getCoins, getAllCoins } = require('../api');
 
+// GET
 router.get('/watchlist', (req, res) => {
   CryptoWatchlist.find()
     .then(watchlists => watchlists.map(watchlist => watchlist.id))
@@ -15,6 +16,7 @@ router.get('/watchlist', (req, res) => {
     });
 });
 
+// POST
 router.post('/watchlist/:id', (req, res) => {
   const id = req.params.id;
   const userCookie = req.cookies.user;
@@ -44,5 +46,20 @@ router.post('/watchlist/:id', (req, res) => {
     res.end('Please login');
   }
 });
+
+// DELETE
+router.delete('/watchlist/:id', (req, res) => {
+  const id = req.params.id;
+
+  CryptoWatchlist.findOneAndRemove({ id })
+    .then(count => {
+      if (count) {
+        res.status(204).end();
+      } else {
+        res.json('Item does not exist in watchlist');
+      }
+    });
+});
+
 
 module.exports = router;
