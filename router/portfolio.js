@@ -29,7 +29,7 @@ router.post('/portfolio/:id', (req, res) => {
             CryptoPortfolio.create({
               id: value.id,
               holdings
-            }))
+            }).then(() => value))
           .then(newItem => {
             res.status(201).json(newItem);
           })
