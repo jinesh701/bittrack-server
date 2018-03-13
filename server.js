@@ -11,6 +11,7 @@ const morgan = require('morgan');
 const { PORT, DATABASE_URL } = require('./config');
 const { CLIENT_ORIGIN } = require('./config');
 const watchlist = require('./router/watchlist');
+const portfolio = require('./router/portfolio');
 
 // Express
 const app = express();
@@ -32,7 +33,7 @@ app.use(morgan('common'));
 app.use(cookieParser());
 
 // Router
-app.use('/api', watchlist);
+app.use('/api', watchlist, portfolio);
 
 app.get('/', (req, res) => {
   res.send('Welcome to my API!');
