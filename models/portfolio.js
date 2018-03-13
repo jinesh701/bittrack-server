@@ -14,7 +14,7 @@ const getFullCryptoPortfolio = () =>
     .then(portfolios =>
       Promise.all(portfolios.map(portfolio => getCoins(portfolio.id).then(item =>
         Object.assign({}, ...item, {
-          0: portfolio.holdings
+          holdings: portfolio.holdings
         })))));
 
 module.exports = { CryptoPortfolio, getFullCryptoPortfolio };
