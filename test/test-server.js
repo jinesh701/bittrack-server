@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 
 const { app, runServer, closeServer } = require('../server');
 const { TEST_DATABASE_URL } = require('../config');
-const { CryptoWatchlist } = require('../models/watchlist');
+const { CryptoWatchlist } = require('../watchlist');
 
 const expect = chai.expect;
 chai.use(chaiHttp);

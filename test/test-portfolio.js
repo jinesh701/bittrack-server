@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 
 const expect = chai.expect;
 
-const { CryptoPortfolio, getFullCryptoPortfolio } = require('../models/portfolio');
+const { CryptoPortfolio, getFullCryptoPortfolio } = require('../portfolio');
 const { TEST_DATABASE_URL } = require('../config');
 
 before(() => mongoose.connect(TEST_DATABASE_URL));
