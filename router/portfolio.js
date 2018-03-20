@@ -5,7 +5,7 @@ const { CryptoPortfolio, getFullCryptoPortfolio } = require('../models/portfolio
 const { getCoins } = require('../api');
 
 // GET
-router.get('/portfolio', (req, res) => {
+router.get('/', (req, res) => {
   getFullCryptoPortfolio()
     .then(res.json.bind(res))
     .catch(err => {
@@ -15,40 +15,35 @@ router.get('/portfolio', (req, res) => {
 });
 
 // POST
-router.post('/portfolio/:id', (req, res) => {
+router.post('/:id', (req, res) => {
   const id = req.params.id;
   const { holdings } = req.body;
-  const userCookie = req.cookies.user;
 
-  if (userCookie !== undefined) {
-    CryptoPortfolio.findOne({ id }, (err, existingCoin) => {
-      if (existingCoin === null) {
-        getCoins(id)
-          .then(x => x[0])
-          .then(value =>
-            CryptoPortfolio.create({
-              id: value.id,
-              holdings
-            }).then(() => value))
-          .then(newItem => {
-            res.status(201).json(newItem);
-          })
-          .catch(err => {
-            console.error(err);
-            res.status(500).json({ message: 'Internal server error' });
-          });
-      } else {
-        const capitalizedId = id.charAt(0).toUpperCase() + id.slice(1);
-        res.json(`${capitalizedId} already in watchlist`);
-      }
-    });
-  } else {
-    res.end('Please login');
-  }
+  CryptoPortfolio.findOne({ id }, (err, existingCoin) => {
+    if (existingCoin === null) {
+      getCoins(id)
+        .then(x => x[0])
+        .then(value =>
+          CryptoPortfolio.create({
+            id: value.id,
+            holdings
+          }).then(() => value))
+        .then(newItem => {
+          res.status(201).json(newItem);
+        })
+        .catch(err => {
+          console.error(err);
+          res.status(500).json({ message: 'Internal server error' });
+        });
+    } else {
+      const capitalizedId = id.charAt(0).toUpperCase() + id.slice(1);
+      res.json(`${capitalizedId} already in watchlist`);
+    }
+  });
 });
 
 // DELETE
-router.delete('/portfolio/:id', (req, res) => {
+router.delete('/:id', (req, res) => {
   const id = req.params.id;
 
   CryptoPortfolio.findOneAndRemove({ id })
@@ -61,4 +56,4 @@ router.delete('/portfolio/:id', (req, res) => {
     });
 });
 
-module.exports = router;
+module.exports = { router };

@@ -5,7 +5,7 @@ const { CryptoWatchlist } = require('../models/watchlist');
 const { getCoins, getAllCoins } = require('../api');
 
 // GET
-router.get('/watchlist', (req, res) => {
+router.get('/', (req, res) => {
   CryptoWatchlist.find()
     .then(watchlists => watchlists.map(watchlist => watchlist.id))
     .then(getAllCoins)
@@ -17,38 +17,33 @@ router.get('/watchlist', (req, res) => {
 });
 
 // POST
-router.post('/watchlist/:id', (req, res) => {
+router.post('/:id', (req, res) => {
   const id = req.params.id;
-  const userCookie = req.cookies.user;
 
-  if (userCookie !== undefined) {
-    CryptoWatchlist.findOne({ id }, (err, existingCoin) => {
-      if (existingCoin === null) {
-        getCoins(id)
-          .then(x => x[0])
-          .then(value =>
-            CryptoWatchlist.create({
-              id: value.id
-            }).then(() => value))
-          .then(newItem => {
-            res.status(201).json(newItem);
-          })
-          .catch(err => {
-            console.error(err);
-            res.status(500).json({ message: 'Internal server error' });
-          });
-      } else {
-        const capitalizedId = id.charAt(0).toUpperCase() + id.slice(1);
-        res.json(`${capitalizedId} already in watchlist`);
-      }
-    });
-  } else {
-    res.end('Please login');
-  }
+  CryptoWatchlist.findOne({ id }, (err, existingCoin) => {
+    if (existingCoin === null) {
+      getCoins(id)
+        .then(x => x[0])
+        .then(value =>
+          CryptoWatchlist.create({
+            id: value.id
+          }).then(() => value))
+        .then(newItem => {
+          res.status(201).json(newItem);
+        })
+        .catch(err => {
+          console.error(err);
+          res.status(500).json({ message: 'Internal server error' });
+        });
+    } else {
+      const capitalizedId = id.charAt(0).toUpperCase() + id.slice(1);
+      res.json(`${capitalizedId} already in watchlist`);
+    }
+  });
 });
 
 // DELETE
-router.delete('/watchlist/:id', (req, res) => {
+router.delete('/:id', (req, res) => {
   const id = req.params.id;
 
   CryptoWatchlist.findOneAndRemove({ id })
@@ -62,4 +57,4 @@ router.delete('/watchlist/:id', (req, res) => {
 });
 
 
-module.exports = router;
+module.exports = { router };
