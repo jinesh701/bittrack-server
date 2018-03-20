@@ -1,20 +1,29 @@
 /* eslint func-names: ["error", "as-needed"], no-shadow: ["error", { "allow": ["err"] }] */
 
+'use strict';
+
 // Dependencies
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const morgan = require('morgan');
+const passport = require('passport');
 
 const { PORT, DATABASE_URL } = require('./config');
 const { CLIENT_ORIGIN } = require('./config');
-const { router: watchlistRouter } = require('./router/watchlist');
-const { router: portfolioRouter } = require('./router/portfolio');
+const { router: usersRouter } = require('./users');
+const { router: authRouter, localStrategy, jwtStrategy } = require('./auth');
+const { router: watchlistRouter } = require('./watchlist');
+const { router: portfolioRouter } = require('./portfolio');
+
+mongoose.Promise = global.Promise;
 
 // Express
 const app = express();
+
+// Logging
+app.use(morgan('common'));
 
 // Body Parser
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -22,19 +31,25 @@ app.use(bodyParser.json());
 
 // Cors
 app.use(cors({
-  origin: CLIENT_ORIGIN,
-  credentials: true
+  origin: CLIENT_ORIGIN
 }));
 
-// Logging
-app.use(morgan('common'));
-
-// Cookie Parser
-app.use(cookieParser());
+// Passport
+passport.use(localStrategy);
+passport.use(jwtStrategy);
 
 // Router
+app.use('/api/users/', usersRouter);
+app.use('/api/auth/', authRouter);
 app.use('/api/watchlist/', watchlistRouter);
 app.use('/api/portfolio/', portfolioRouter);
+
+const jwtAuth = passport.authenticate('jwt', { session: false });
+
+// A protected endpoint which needs a valid JWT to access it
+app.get('/api/protected', jwtAuth, (req, res) => res.json({
+  data: 'rosebud'
+}));
 
 app.get('/api', (req, res) => {
   res.send('Welcome to my API!');
