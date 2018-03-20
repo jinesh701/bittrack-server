@@ -8,6 +8,7 @@ module.exports = {
     'arrow-parens': 0,
     'comma-dangle': 0,
     'prefer-destructuring': ['error', { object: false, array: false }],
-    "no-shadow": [2, {"allow": ["err"]}]
+    "no-shadow": [2, {"allow": ["err"]}],
+    "strict": [0, "global"]
   }
 };
