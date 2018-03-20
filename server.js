@@ -10,8 +10,8 @@ const morgan = require('morgan');
 
 const { PORT, DATABASE_URL } = require('./config');
 const { CLIENT_ORIGIN } = require('./config');
-const watchlist = require('./router/watchlist');
-const portfolio = require('./router/portfolio');
+const { router: watchlistRouter } = require('./router/watchlist');
+const { router: portfolioRouter } = require('./router/portfolio');
 
 // Express
 const app = express();
@@ -33,24 +33,11 @@ app.use(morgan('common'));
 app.use(cookieParser());
 
 // Router
-app.use('/api', watchlist, portfolio);
+app.use('/api/watchlist/', watchlistRouter);
+app.use('/api/portfolio/', portfolioRouter);
 
-app.get('/', (req, res) => {
+app.get('/api', (req, res) => {
   res.send('Welcome to my API!');
-});
-
-app.post('/login', (req, res) => {
-  const createId = function () {
-    return `_${Math.random()
-      .toString(36)
-      .substr(2, 9)}`;
-  };
-
-  if (!req.cookies.user) {
-    res.cookie('user', createId()).end();
-  } else {
-    res.end();
-  }
 });
 
 // Catch-all for non-existent endpoints
