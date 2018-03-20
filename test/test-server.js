@@ -47,14 +47,6 @@ describe('Crypto API', () => {
 
   after(() => closeServer());
 
-  describe('Login', () => {
-    it('sets the cookie', () =>
-      chai
-        .request(app)
-        .post('/login')
-        .then(res => expect(res).to.have.cookie('user')));
-  });
-
   describe('Watchlist GET', () => {
     it('gets crypto items', () => {
       let res;
@@ -99,29 +91,26 @@ describe('Crypto API', () => {
     let id;
     let error;
     it('posts an item to watchlist and checks if it already exists', () =>
-      agent
-        .post('/login')
-        .then(res => expect(res).to.have.cookie('user'))
-        .then(() =>
-          agent
-            .post('/api/watchlist/stellar')
-            .then(res => {
-              expect(res).to.have.status(201);
-              expect(res).to.be.be.json;
-              expect(res).to.be.a('object');
 
-              resCryptos = res.body;
-              id = res.body.id;
-              return CryptoWatchlist.findOne({ id });
-            })
-            .then(item => {
-              expect(item.id).to.equal(resCryptos.id);
-            })
-            .then(() =>
-              agent.post('/api/watchlist/stellar').then(res => {
-                error = 'Stellar already in watchlist';
-                expect(res.body).to.equal(error);
-              }))));
+      agent
+        .post('/api/watchlist/stellar')
+        .then(res => {
+          expect(res).to.have.status(201);
+          expect(res).to.be.be.json;
+          expect(res).to.be.a('object');
+
+          resCryptos = res.body;
+          id = res.body.id;
+          return CryptoWatchlist.findOne({ id });
+        })
+        .then(item => {
+          expect(item.id).to.equal(resCryptos.id);
+        })
+        .then(() =>
+          agent.post('/api/watchlist/stellar').then(res => {
+            error = 'Stellar already in watchlist';
+            expect(res.body).to.equal(error);
+          })));
   });
 
   describe('Watchlist DELETE', () => {
