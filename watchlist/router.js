@@ -1,3 +1,7 @@
+/* eslint no-underscore-dangle: ["error", { "allow": ["_id"] }] */
+
+'use strict';
+
 const express = require('express');
 
 const router = express.Router();
@@ -6,7 +10,8 @@ const { getCoins, getAllCoins } = require('../api');
 
 // GET
 router.get('/', (req, res) => {
-  CryptoWatchlist.find()
+  CryptoWatchlist.find({ _creator: req.user._id })
+    .sort({ id: 'asc' })
     .then(watchlists => watchlists.map(watchlist => watchlist.id))
     .then(getAllCoins)
     .then(res.json.bind(res))
@@ -26,7 +31,8 @@ router.post('/:id', (req, res) => {
         .then(x => x[0])
         .then(value =>
           CryptoWatchlist.create({
-            id: value.id
+            id: value.id,
+            _creator: req.user._id
           }).then(() => value))
         .then(newItem => {
           res.status(201).json(newItem);
