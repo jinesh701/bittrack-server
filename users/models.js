@@ -1,4 +1,5 @@
-/* eslint func-names: ["error", "never"] */
+/* eslint func-names: ["error", "never"],
+no-underscore-dangle: ["error", { "allow": ["_id"] }] */
 
 const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
@@ -19,6 +20,7 @@ const UserSchema = mongoose.Schema({
 
 UserSchema.methods.serialize = function () {
   return {
+    _id: this._id,
     username: this.username || ''
   };
 };
