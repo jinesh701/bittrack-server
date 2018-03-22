@@ -3,9 +3,11 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken');
 
+const { User } = require('../users');
 const { app, runServer, closeServer } = require('../server');
-const { TEST_DATABASE_URL } = require('../config');
+const { JWT_SECRET, TEST_DATABASE_URL } = require('../config');
 const { CryptoWatchlist } = require('../watchlist');
 
 const expect = chai.expect;
@@ -39,20 +41,48 @@ function tearDownDb() {
 }
 
 describe('Crypto API', () => {
+  const username = 'exampleUser';
+  const password = 'examplePass';
+
   before(() => runServer(TEST_DATABASE_URL));
 
-  beforeEach(() => seedCryptoData());
+  beforeEach(() => {
+    seedCryptoData();
+    return User.hashPassword(password).then(password =>
+      User.create({
+        username,
+        password
+      }));
+  });
 
-  afterEach(() => tearDownDb());
+  afterEach(() => {
+    tearDownDb();
+    return User.remove({});
+  });
 
   after(() => closeServer());
 
   describe('Watchlist GET', () => {
+    const token = jwt.sign(
+      {
+        user: {
+          username
+        }
+      },
+      JWT_SECRET,
+      {
+        algorithm: 'HS256',
+        subject: username,
+        expiresIn: '7d'
+      }
+    );
+
     it('gets crypto items', () => {
       let res;
       return chai
         .request(app)
         .get('/api/watchlist')
+        .set('authorization', `Bearer ${token}`)
         .then(_res => {
           res = _res;
           expect(res).to.have.status(200);
@@ -70,6 +100,7 @@ describe('Crypto API', () => {
       return chai
         .request(app)
         .get('/api/watchlist')
+        .set('authorization', `Bearer ${token}`)
         .then(res => {
           expect(res).to.have.status(200);
           expect(res).to.be.json;
@@ -86,14 +117,30 @@ describe('Crypto API', () => {
   });
 
   describe('Watchlist POST', () => {
-    const agent = chai.request.agent(app);
     let resCryptos;
     let id;
     let error;
-    it('posts an item to watchlist and checks if it already exists', () =>
 
+    const token = jwt.sign(
+      {
+        user: {
+          username
+        }
+      },
+      JWT_SECRET,
+      {
+        algorithm: 'HS256',
+        subject: username,
+        expiresIn: '7d'
+      }
+    );
+
+    const agent = chai.request(app);
+
+    it('posts an item to watchlist and checks if it already exists', () =>
       agent
         .post('/api/watchlist/stellar')
+        .set('authorization', `Bearer ${token}`)
         .then(res => {
           expect(res).to.have.status(201);
           expect(res).to.be.be.json;
@@ -107,24 +154,43 @@ describe('Crypto API', () => {
           expect(item.id).to.equal(resCryptos.id);
         })
         .then(() =>
-          agent.post('/api/watchlist/stellar').then(res => {
-            error = 'Stellar already in watchlist';
-            expect(res.body).to.equal(error);
-          })));
+          agent
+            .post('/api/watchlist/stellar')
+            .set('authorization', `Bearer ${token}`)
+            .then(res => {
+              error = 'Stellar already in watchlist';
+              expect(res.body).to.equal(error);
+            })));
   });
 
   describe('Watchlist DELETE', () => {
+    const token = jwt.sign(
+      {
+        user: {
+          username
+        }
+      },
+      JWT_SECRET,
+      {
+        algorithm: 'HS256',
+        subject: username,
+        expiresIn: '7d'
+      }
+    );
+
     const error = 'Item does not exist in watchlist';
     it('should delete a coin and check if it exists', () =>
       chai
         .request(app)
         .delete('/api/watchlist/bitcoin')
+        .set('authorization', `Bearer ${token}`)
         .then(res => {
           expect(res).to.have.status(204);
         })
         .then(chai
           .request(app)
           .delete('/api/watchlist/bitcoin')
+          .set('authorization', `Bearer ${token}`)
           .then(res => {
             expect(res.body).to.equal(error);
           })));
