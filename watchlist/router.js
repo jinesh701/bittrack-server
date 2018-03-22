@@ -25,7 +25,7 @@ router.get('/', (req, res) => {
 router.post('/:id', (req, res) => {
   const id = req.params.id;
 
-  CryptoWatchlist.findOne({ id }, (err, existingCoin) => {
+  CryptoWatchlist.findOne({ _creator: req.user._id, id }, (err, existingCoin) => {
     if (existingCoin === null) {
       getCoins(id)
         .then(x => x[0])
@@ -41,9 +41,6 @@ router.post('/:id', (req, res) => {
           console.error(err);
           res.status(500).json({ message: 'Internal server error' });
         });
-    } else {
-      const capitalizedId = id.charAt(0).toUpperCase() + id.slice(1);
-      res.json(`${capitalizedId} already in watchlist`);
     }
   });
 });
@@ -52,7 +49,7 @@ router.post('/:id', (req, res) => {
 router.delete('/:id', (req, res) => {
   const id = req.params.id;
 
-  CryptoWatchlist.findOneAndRemove({ id })
+  CryptoWatchlist.findOneAndRemove({ _creator: req.user._id, id })
     .then(count => {
       if (count) {
         res.status(204).end();
