@@ -1,14 +1,22 @@
+/* eslint no-underscore-dangle: ["error", { "allow": ["_id"] }] */
+
 'use strict';
 
 const express = require('express');
 
 const router = express.Router();
-const { CryptoPortfolio, getFullCryptoPortfolio } = require('./models');
+const { CryptoPortfolio } = require('./models');
 const { getCoins } = require('../api');
 
 // GET
 router.get('/', (req, res) => {
-  getFullCryptoPortfolio()
+  CryptoPortfolio.find({ _creator: req.user._id })
+    .sort({ holdings: 'desc' })
+    .then(portfolios =>
+      Promise.all(portfolios.map(portfolio => getCoins(portfolio.id).then(item =>
+        Object.assign({}, ...item, {
+          holdings: portfolio.holdings
+        })))))
     .then(res.json.bind(res))
     .catch(err => {
       console.log(err);
@@ -28,7 +36,8 @@ router.post('/:id', (req, res) => {
         .then(value =>
           CryptoPortfolio.create({
             id: value.id,
-            holdings
+            holdings,
+            _creator: req.user._id
           }).then(() => value))
         .then(newItem => {
           res.status(201).json(newItem);
