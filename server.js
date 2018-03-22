@@ -39,18 +39,13 @@ app.use(cors({
 passport.use(localStrategy);
 passport.use(jwtStrategy);
 
+const jwtAuth = passport.authenticate('jwt', { session: false });
+
 // Router
 app.use('/api/users/', usersRouter);
 app.use('/api/auth/', authRouter);
-app.use('/api/watchlist/', watchlistRouter);
-app.use('/api/portfolio/', portfolioRouter);
-
-const jwtAuth = passport.authenticate('jwt', { session: false });
-
-// A protected endpoint which needs a valid JWT to access it
-app.get('/api/protected', jwtAuth, (req, res) => res.json({
-  data: 'rosebud'
-}));
+app.use('/api/watchlist/', jwtAuth, watchlistRouter);
+app.use('/api/portfolio/', jwtAuth, portfolioRouter);
 
 app.get('/api', (req, res) => {
   res.send('Welcome to my API!');
