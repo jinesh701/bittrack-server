@@ -137,7 +137,7 @@ describe('Crypto API', () => {
 
     const agent = chai.request(app);
 
-    it('posts an item to watchlist and checks if it already exists', () =>
+    it('posts an item to watchlist', () =>
       agent
         .post('/api/watchlist/stellar')
         .set('authorization', `Bearer ${token}`)
@@ -150,17 +150,7 @@ describe('Crypto API', () => {
           id = res.body.id;
           return CryptoWatchlist.findOne({ id });
         })
-        .then(item => {
-          expect(item.id).to.equal(resCryptos.id);
-        })
-        .then(() =>
-          agent
-            .post('/api/watchlist/stellar')
-            .set('authorization', `Bearer ${token}`)
-            .then(res => {
-              error = 'Stellar already in watchlist';
-              expect(res.body).to.equal(error);
-            })));
+        .then(item => expect(item.id).to.equal(resCryptos.id)));
   });
 
   describe('Watchlist DELETE', () => {
